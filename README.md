@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="backend/glowupbuddy_Transparent.png" alt="GlowUpBuddy Logo" width="220"/>
+  <img src="logo.png" alt="Glow-Up Buddy Logo" width="300"/>
 </p>
-
-<h1 align="center">GlowUpBuddy</h1>
 
 <p align="center">
   Your AI-powered daily companion — stay focused, feel good, and glow up every day.
@@ -78,6 +76,24 @@ uv run uvicorn main:app --reload
 ```
 
 See `backend/.env.example` for all required environment variables.
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="frontend/screenshots/01-app-screens.png" alt="App Screens Overview" width="700"/>
+</p>
+
+<p align="center">
+  <img src="frontend/screenshots/02-app-screens.png" alt="App Screens Detail" width="700"/>
+</p>
+
+<p align="center">
+  <img src="frontend/screenshots/app-today.png" alt="Today View" width="340"/>
+  &nbsp;&nbsp;
+  <img src="frontend/screenshots/app-vibes-fix2.png" alt="Vibes Check-in" width="340"/>
+</p>
 
 ---
 
