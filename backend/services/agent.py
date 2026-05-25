@@ -89,7 +89,15 @@ async def handle_message(chat_id: str, text: str = "", audio_bytes: bytes | None
         progress = "\n".join(f"  • {p}" for p in result.progress_updates)
         parts.append(f"🚀 *Progress:*\n{progress}")
 
-    return "\n\n".join(parts) if parts else "Got it! I've saved your note."
+    intake_reply = "\n\n".join(parts) if parts else "Got it! I've saved your note."
+
+    # Auto-compose plan after every voice message
+    if audio_bytes:
+        state = {"user_id": chat_id, "extraction": result.model_dump()}
+        state = await plan_composer_run(state)
+        return f"{intake_reply}\n\n---\n\n{_format_plan(state['daily_plan'])}"
+
+    return intake_reply
 
 
 def _format_plan(plan: dict) -> str:

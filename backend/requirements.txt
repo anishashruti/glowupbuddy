@@ -8,3 +8,5 @@ google-genai
 google-cloud-secret-manager
 google-api-python-client
 google-auth-oauthlib
+pytest
+pytest-asyncio

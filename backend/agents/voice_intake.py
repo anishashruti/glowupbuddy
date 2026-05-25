@@ -95,5 +95,17 @@ def _save_to_db(chat_id: str, result: ExtractionResult, source: str) -> None:
             "extraction": result.model_dump(),
             "created_at": datetime.now(timezone.utc),
         })
+        if result.new_tasks:
+            db["tasks"].insert_many([
+                {
+                    "user_id": chat_id,
+                    "title": task,
+                    "source": source,
+                    "status": "pending",
+                    "date": date_type.today().isoformat(),
+                    "created_at": datetime.now(timezone.utc),
+                }
+                for task in result.new_tasks
+            ])
     except Exception:
         pass

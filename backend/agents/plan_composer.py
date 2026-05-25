@@ -19,6 +19,9 @@ _PROMPT = """You are a kind personal growth assistant. Generate a mood-aware dai
 MOOD: {mood}
 MAX TODOS: {max_tasks} (enforce this limit strictly — do not exceed it)
 
+TASKS FROM TODAY'S MESSAGE:
+{new_tasks}
+
 CALENDAR EVENTS TODAY:
 {calendar}
 
@@ -85,6 +88,12 @@ def _fmt_bingo(board: dict | None) -> str:
     return "\n".join(lines) if lines else "All squares checked!"
 
 
+def _fmt_new_tasks(tasks: list[str]) -> str:
+    if not tasks:
+        return "None."
+    return "\n".join(f"- {t}" for t in tasks)
+
+
 def _fmt_preferences(prefs: dict) -> str:
     if not prefs:
         return "No preferences set yet."
@@ -112,9 +121,9 @@ async def run(state: dict) -> dict:
     user_id = state["user_id"]
     extraction = state.get("extraction", {})
     mood = extraction.get("mood", "neutral") or "neutral"
+    new_tasks = extraction.get("new_tasks", [])
 
     # All 4 reads in parallel
-    active_projects = None  # resolved after prefs fetch below — see note
     calendar, obsidian, bingo, prefs = await asyncio.gather(
         asyncio.to_thread(get_calendar_events),
         asyncio.to_thread(get_obsidian_tasks, user_id),
@@ -122,10 +131,13 @@ async def run(state: dict) -> dict:
         asyncio.to_thread(get_user_profile, user_id),
     )
 
-    # Re-filter obsidian by active_projects now that we have prefs
+    # Filter obsidian in-memory by active_projects (avoids a second DB round-trip)
     active_projects = prefs.get("active_projects") or None
     if active_projects:
-        obsidian = await asyncio.to_thread(get_obsidian_tasks, user_id, active_projects)
+        obsidian = [
+            t for t in obsidian
+            if any(p.lower() in t["board_name"].lower() for p in active_projects)
+        ]
 
     # Mood-aware task cap
     max_tasks = 4 if mood.lower() in TIRED_MOODS else 6
@@ -135,6 +147,7 @@ async def run(state: dict) -> dict:
     prompt = _PROMPT.format(
         mood=mood,
         max_tasks=max_tasks,
+        new_tasks=_fmt_new_tasks(new_tasks),
         calendar=_fmt_calendar(calendar),
         obsidian=_fmt_obsidian(obsidian),
         bingo=_fmt_bingo(bingo),
