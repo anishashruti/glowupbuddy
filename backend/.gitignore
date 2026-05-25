@@ -1,0 +1,20 @@
+# Secrets & credentials
+.env
+token.json
+client_secret*.json
+
+# Claude Code
+.claude/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.python-version
+
+# Data & local outputs
+extractions/
+
+# macOS
+.DS_Store

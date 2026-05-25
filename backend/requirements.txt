@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pymongo
+dnspython
+python-dotenv
+python-telegram-bot
+google-genai
+google-cloud-secret-manager
+google-api-python-client
+google-auth-oauthlib
